@@ -1,0 +1,171 @@
+@import url("https://fonts.googleapis.com/css?family=Lato:300,400,700,900");
+html, body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  font-size: 17px;
+  font-family: "Lato", Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #555459;
+  overflow: hidden;
+}
+
+main {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  height: 100%;
+}
+
+aside {
+  background-color: #434745;
+  color: white;
+  width: 270px;
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.teams {
+  padding-top: 45px;
+  background: rgba(0, 0, 0, 0.3);
+  width: 60px;
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.team {
+  margin-top: 15px;
+  height: 40px;
+  width: 40px;
+  border-radius: 5px;
+  background: #4D5250;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-line-pack: center;
+      align-content: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.team:hover {
+  border: solid 3px rgba(0, 0, 0, 0.3);
+  height: 43px;
+  width: 43px;
+  margin-top: 12px;
+}
+
+.team-name {
+  text-transform: uppercase;
+  color: white;
+  font-size: 20px;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
+}
+
+.workspace-column {
+  padding-top: 15px;
+  width: 210px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  padding-left: 15px;
+}
+
+.workspace-column .workspace-name {
+  font-size: 20px;
+}
+
+.workspace-column h4 {
+  margin-top: 15px;
+  margin-bottom: -10px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.workspace-column h4:hover {
+  color: white;
+}
+
+.channel-list {
+  margin-left: -15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 15px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.channel-list:hover {
+  color: white;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.channel-list.active {
+  background: #4C9689;
+  color: white;
+}
+
+.username-text {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  font-size: 12px;
+}
+
+.notification {
+  position: absolute;
+  top: 18.75px;
+  left: 240px;
+}
+
+.add-channel {
+  position: relative;
+  left: 170px;
+  top: -5px;
+}
+
+.icon {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.icon:hover {
+  color: white;
+}
+
+nav {
+  padding-left: 15px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  height: 60px;
+  width: 100%;
+  -webkit-box-shadow: 0px 1px 5px #b9b9b9;
+  box-shadow: 0px 1px 5px #b9b9b9;
+}
+/*# sourceMappingURL=main.css.map */
