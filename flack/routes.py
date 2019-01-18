@@ -9,7 +9,20 @@ from werkzeug.security import generate_password_hash, check_password_hash
 @app.route('/')
 def index():
     if current_user.is_authenticated:
-        return render_template('index.html')
+        workspace_list = {}
+        c_list = []
+        workspace = current_user.workspaces[0]
+        workspace_list[workspace.name[:2]] = workspace.name
+        channels = workspace.channels
+        print(channels)
+        for channel in channels:
+            c_list.append(channel.name)
+        print(c_list)
+        if c_list is None:
+            return render_template('index.html', workspaces=workspace_list, user=current_user.username)
+        else:
+            return render_template('index.html', workspaces=workspace_list, user=current_user.username, chan=c_list)
+        
     else:
         return redirect(url_for('login'))
 
@@ -47,12 +60,18 @@ def register():
             return redirect(url_for('register'))
         if email:
             print('email already exists')
-        if workspace:
-            print("workspace already exists")
-        w1 = Workspace(name=form_workspace)
         u1 = User(username=form_username, email=form_email, password=form_password)
-        db.session.add(u1)
-        db.session.add(w1)
+        if workspace:
+            db.session.add(u1)
+            u1.workspaces.append(workspace)
+        else:
+            db.session.add(u1)
+            w1 = Workspace(name=form_workspace)
+            db.session.add(w1)
+            db.session.commit()
+            u1.workspaces.append(w1)
+        
+        
         db.session.commit()
         flash(f"Account created for {form.username.data}", category='success')
         return (redirect(url_for('login')))

@@ -27,33 +27,36 @@
         <aside class="menu">
             <!--workspace-->
             <div class="teams">
+                {% if workspaces %}
+                    {% for space, id in workspaces.items() %}
+                    <div class="team">
+                        <p class="team-name" id="{{ id }}">{{ space }}</p>
+                    </div>
+                    {% endfor %}
+                {% else %}
                 <div class="team">
-                    <p class="team-name">FC</p>
+                    <p class="team-name">+</p>
                 </div>
+                {% endif %}
                 <div class="team">
-                    <p class="team-name">FC</p>
-                </div>
-                <div class="team">
-                    <p class="team-name">FC</p>
+                    <p class="team-name">+</p>
                 </div>
             </div>
             <!---->
             <div class="workspace-column">
                 <i class="far fa-bell icon notification"></i>
                 <h1 class="workspace-name">Flask Workspace</h1>
-                <p class="username-text">admin1000</p>
+                <p class="username-text">{{ user }}</p>
 
                 <h4>Channels</h4>
                 <i class="fas fa-plus icon add-channel"></i>
+                {% if chan %}
+                {% for channel in chan %}
                 <div class="channel-list">
-                    <p># random</p>
+                    <p># {{channel}}</p>
                 </div>
-                <div class="channel-list active">
-                    <p># general</p>
-                </div>
-                <div class="channel-list">
-                    <p># documents</p>
-                </div>
+                {% endfor %}
+                {% endif %}
                 <h4>Direct Messages</h4>
             </div>
         </aside>
