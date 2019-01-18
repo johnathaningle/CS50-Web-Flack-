@@ -31,7 +31,7 @@ class User(db.Model, UserMixin):
 class Workspace(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    description = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=True)
     channels = db.relationship("Channel", secondary=workspace_channels, backref='channels', lazy=True)
 
 class Channel(db.Model):
@@ -85,3 +85,13 @@ def bootstrap_data():
     c1.messages.append(m2)
     c1.messages.append(m1)
     db.session.commit()
+
+    #test database queries
+    w1_channels = w1.channels
+    #get each channel
+    for i in w1_channels:
+        print(i.name)
+        #print the users in each channel
+        x = i.users
+        for z in x:
+            print("\t"+z.username)

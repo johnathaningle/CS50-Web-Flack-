@@ -5,6 +5,10 @@
 <form action="" method="POST">
     {{ form.hidden_tag() }}
     <div class="form-group">
+        {{ form.workspace_name.label(class="form-label")}}
+        {{ form.workspace_name(class="form-input")}}
+    </div>
+    <div class="form-group">
         {{ form.username.label(class="form-label")}}
         {{ form.username(class="form-input")}}
     </div>
