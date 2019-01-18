@@ -1,0 +1,28 @@
+{% extends 'login_layout.html' %}
+
+{% block form %}
+<h1>Login</h1>
+<form action="" method="POST">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.email.label(class="form-label")}}
+            {{ form.email(class="form-input")}}
+        </div>
+        <div class="form-group">
+            {{ form.password.label(class="form-label")}}
+            {{ form.password(class="form-input")}}
+        </div>
+        <div class="form-group remember">
+            {{ form.remember.label(class="form-label")}}
+            <div class="container">
+                {{ form.remember(class="form-input checkmark")}}
+            </div>
+            
+        </div>
+        <div class="form-group">
+            {{ form.submit(class='form-button')}}
+        </div>
+    <hr>
+    <p>Need to sign up? <a href="{{ url_for('register')}}"> Register </a></p>
+    </form>
+{% endblock form %}

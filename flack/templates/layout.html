@@ -13,6 +13,18 @@
 </head>
 
 <body>
+        {% with messages = get_flashed_messages(with_categories=true)%}
+        {% if messages %}
+        {% for category, message in messages%}
+        <div class="flash-message {{ category }}">
+            <p>{{ message }}</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}
+        {% endblock content %}
     <main>
         <aside class="menu">
             <!--workspace-->
@@ -54,8 +66,7 @@
         </nav>
         <!--main content-->
         <div class="container">
-            {% block content %}
-            {% endblock content %}
+
         </div>
     </main>
 </body>

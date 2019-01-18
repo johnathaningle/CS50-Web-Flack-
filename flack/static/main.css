@@ -132,9 +132,9 @@ aside {
 }
 
 .notification {
-  position: absolute;
-  top: 18.75px;
-  left: 240px;
+  position: relative;
+  top: 20px;
+  left: 170px;
 }
 
 .add-channel {
@@ -167,5 +167,33 @@ nav {
   width: 100%;
   -webkit-box-shadow: 0px 1px 5px #b9b9b9;
   box-shadow: 0px 1px 5px #b9b9b9;
+}
+
+.flash-message {
+  width: 100%;
+  height: 60px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-line-pack: center;
+      align-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  text-align: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  color: white;
+  -webkit-box-shadow: inset 0 0 30px #68c2ad;
+  box-shadow: inset 0 0 30px #68c2ad;
+}
+
+.success {
+  background: #5DB09D;
+}
+
+.danger {
+  background: #DE4C0D;
 }
 /*# sourceMappingURL=main.css.map */

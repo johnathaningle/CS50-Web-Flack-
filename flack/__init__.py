@@ -8,7 +8,16 @@ from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///flack.db'
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 socketio = SocketIO(app)
 
+db =SQLAlchemy(app)
+
+loginmanager = LoginManager(app)
+loginmanager.login_view = 'login'
+loginmanager.login_message_category = 'info'
+
+migrate = Migrate(app, db)
 
 from flack import routes, models
