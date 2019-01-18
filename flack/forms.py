@@ -4,6 +4,7 @@ from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationE
 from flack.models import User
 
 class RegistrationForm(FlaskForm):
+    workspace_name = StringField('Workspace Name', validators=[DataRequired(), Length(min=4, max=24)])
     username = StringField('Username', validators=[DataRequired(), Length(min=4, max=24)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
