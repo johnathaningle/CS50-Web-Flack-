@@ -1,5 +1,5 @@
 from flack import app, db
-from flack.models import User, Workspace, Channel
+from flack.models import User, Workspace, Channel, Message
 from flack.forms import RegistrationForm, LoginForm
 from flask import render_template, redirect, flash, url_for, request, jsonify, session
 from flask_login import login_user, current_user, logout_user
@@ -12,8 +12,7 @@ def index():
         workspace_list = {}
         for workspace in current_user.workspaces:
             workspace_list[workspace.name[:2]] = workspace.name.replace(" ", "_")
-        return render_template('index.html', workspaces=workspace_list, user=current_user.username)
-        
+        return render_template('index.html', workspaces=workspace_list, user=current_user.username)  
     else:
         return redirect(url_for('login'))
 
@@ -103,9 +102,13 @@ def get_channel(workspace, channel_name):
         channel_list.append(name)
     if channel_id:
         data = []
-        messages = db.session.execute(f"SELECT * FROM message WHERE channel_id={channel_id}").fetchall()
+        messages = Message.query.filter_by(channel_id=channel_id).all()
+        print(messages)
         for row in messages:
-            data.append(dict(row))
+            contents = {}
+            contents['content'] = row.content
+            contents['username'] = row.sender.username
+            data.append(dict(contents))
         return jsonify(data)
     else:
         space = Workspace.query.filter_by(name=workspace).first()

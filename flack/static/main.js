@@ -1,6 +1,6 @@
 var current_workspace = '';
 document.addEventListener("DOMContentLoaded", function() {
-    console.log("ready");
+    const mainArea = document.querySelector('.main-area');
     var x = document.querySelectorAll(".team-name");
     console.log(x);
     const heading = document.querySelector(".navbar-brand");
@@ -81,6 +81,10 @@ document.addEventListener("DOMContentLoaded", function() {
         channel_container.innerHTML='';
     }
 
+    function clearMessages() {
+        mainArea.innerHTML = '';
+    }
+
     function removeChannelActive() {
         let channel_links = document.querySelectorAll('.channel-list');
             channel_links.forEach(element => {
@@ -94,8 +98,9 @@ document.addEventListener("DOMContentLoaded", function() {
             if (this.readyState == 4 && this.status == 200) {
                 data = this.responseText;
                 data = JSON.parse(data);
+                clearMessages()
                 data.forEach(element => {
-                    console.log(element);
+                    createMessage(element.content, element.username);
                 });
             }
         }
@@ -103,6 +108,23 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log(url);
         request.open('GET', url, true);
         request.send();
+    }
+
+    function createMessage(content, username) {
+        let messageDiv = document.createElement('div');
+        messageDiv.className = "message shadow-sm";
+        let rowDiv = document.createElement('div');
+        rowDiv.className = 'row';
+        let picDiv = document.createElement('div');
+        picDiv.className = 'col-md-1';
+        picDiv.innerHTML = '<img src="../static/img/icon.png" alt="profilepic" class="profile-picture">'
+        let contentDiv = document.createElement('div');
+        contentDiv.className = 'col-md-11';
+        contentDiv.innerHTML = `<p>${username}</p><hr><p>${content}</p>`;
+        rowDiv.appendChild(picDiv);
+        rowDiv.appendChild(contentDiv);
+        messageDiv.appendChild(rowDiv);
+        mainArea.appendChild(messageDiv);
     }
 });
     
