@@ -41,8 +41,8 @@
                     <p class="team-name">+</p>
                 </div>
                 {% endif %}
-                <div class="team">
-                    <p class="team-name">+</p>
+                <div class="team" id="add-team">
+                    <p class="team-name" id="add-team">+</p>
                 </div>
             </div>
             <!---->
@@ -52,10 +52,18 @@
                 <p class="username-text">{{ user }}</p>
 
                 <h4>Channels</h4>
-                <a class="add-channel" href="#channel-toggle" data-toggle="collapse" aria-expanded="false" aria-controls="channel-toggle"><i class="fas fa-plus"></i></a>
+                <a class="add-channel" href="#channel-toggle" data-toggle="collapse" aria-expanded="false"
+                    aria-controls="channel-toggle"><i class="fas fa-plus"></i></a>
                 <div class="collapse pr-4" id="channel-toggle">
-                    <input class="form-control-sm mt-2 mr-2" type="text" placeholder="Channel Name">
-                    <button class="btn btn-secondary form-control-sm m-3" type="button" id="add-channel-button">Add Channel</button>
+                    <div class="row mb-2">
+                        <div class="col-6">
+                                <input class="form-control-sm mt-2" type="text" placeholder="Channel Name" id="new-channel-name">
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-sm btn-primary" type="button" id="add-channel-button">+</button>
+                        </div>  
+                            
+                    </div>
                 </div>
                 <div class="channel-container">
                 </div>
@@ -72,9 +80,9 @@
 
                 <div class="collapse navbar-collapse">
                     <form class="form-inline ml-auto">
-                            <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-                            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-                            <a href="{{url_for('logout')}}" class="btn btn-secondary my-2 my-sm-0 ml-3 mr-3"><i class="fas fa-sign-out-alt"></i></a>
+                        <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+                        <a href="{{url_for('logout')}}" class="btn btn-secondary my-2 my-sm-0 ml-3 mr-3"><i class="fas fa-sign-out-alt"></i></a>
                     </form>
                 </div>
             </nav>

@@ -145,6 +145,16 @@ aside {
     }
 }
 
+#new-channel-name {
+    width: 150px;
+}
+
+#add-channel-button {
+    position: relative;
+    left: 55px;
+    top: 9px;
+}
+
 .icon {
     color: $channel-text-color;
     &:hover {

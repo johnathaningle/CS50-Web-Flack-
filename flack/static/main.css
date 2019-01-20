@@ -153,6 +153,16 @@ aside {
   color: #fff;
 }
 
+#new-channel-name {
+  width: 150px;
+}
+
+#add-channel-button {
+  position: relative;
+  left: 55px;
+  top: 9px;
+}
+
 .icon {
   color: rgba(255, 255, 255, 0.6);
 }

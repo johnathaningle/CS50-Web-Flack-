@@ -1,5 +1,5 @@
 from flack import app, db
-from flack.models import User, Workspace
+from flack.models import User, Workspace, Channel
 from flack.forms import RegistrationForm, LoginForm
 from flask import render_template, redirect, flash, url_for, request, jsonify, session
 from flask_login import login_user, current_user, logout_user
@@ -78,7 +78,43 @@ def workspace(workspace):
     workspace = workspace.replace("_", " ")
     channel_list = []
     space = Workspace.query.filter_by(name=workspace).first()
-    channels = space.channels
-    for i in channels:
-        channel_list.append(i.name)
-    return jsonify(channel_list)
+    try:
+        chans = space.channels
+        for i in chans:
+            channel_list.append(i.name)
+        return jsonify(channel_list)
+    except AttributeError:
+        print("Invalid Workspace name")
+
+@app.route("/<workspace>/<channel_name>")
+def get_channel(workspace, channel_name):
+    workspace = workspace.replace("_", " ")
+    channel_name = channel_name.replace("_", " ")
+    channel_list = []
+    channel_id = ''
+    space = Workspace.query.filter_by(name=workspace).first()
+    chans = space.channels
+    for i in chans:
+        name = i.name
+        print(f"{channel_name} {name}")
+        if name == channel_name:
+            channel_id = i.id
+            print(i.id)
+        channel_list.append(name)
+    if channel_id:
+        data = []
+        messages = db.session.execute(f"SELECT * FROM message WHERE channel_id={channel_id}").fetchall()
+        for row in messages:
+            data.append(dict(row))
+        return jsonify(data)
+    else:
+        space = Workspace.query.filter_by(name=workspace).first()
+        c = Channel(name=channel_name)
+        u = User.query.get(current_user.id)
+        db.session.add(c)
+        db.session.commit()
+        space.channels.append(c)
+        c.users.append(u)
+        db.session.commit()
+        data = [{'new-channel': 'success'}]
+        return jsonify(data)

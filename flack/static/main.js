@@ -1,19 +1,31 @@
+var current_workspace = '';
 document.addEventListener("DOMContentLoaded", function() {
     console.log("ready");
     var x = document.querySelectorAll(".team-name");
+    console.log(x);
     const heading = document.querySelector(".navbar-brand");
     var channel_links = document.querySelectorAll('.channel-list');
+    const addChannelButton = document.querySelector('#add-channel-button');
+
+    addChannelButton.addEventListener('click', function(e) {
+        let newChannelField = document.querySelector('#new-channel-name')
+        let name = newChannelField.value;
+        name = name.replace(" ", "_");
+        getChannelUrl(name);
+    });
 
     document.addEventListener('click', function(e){
-        console.log(e.target);
         let element = e.target;
+        console.log(element);
         if (element.className == "channel-list") {
             removeChannelActive();
             heading.innerText = element.firstElementChild.innerText;
+            getChannelUrl(element.firstElementChild.innerText.replace("# ", ""));
             element.className = "channel-list active";
         } else if (element.className == "channel-item") {
             removeChannelActive();
             heading.innerText = element.innerText;
+            getChannelUrl(element.innerText.replace("# ", ""));
             element.parentElement.className = "channel-list active";
         }
     });
@@ -23,6 +35,7 @@ document.addEventListener("DOMContentLoaded", function() {
             removeActive();
             clearChannels();
             text = this.id;
+            current_workspace = text;
             this.parentElement.className = "team active";
             heading.innerText = `# ${text.replace('_',' ')}`;
             load_page(text);
@@ -31,7 +44,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function load_page(text) {
         console.log('searching');
-        var channel_container = document.querySelector('.channel-container');
+        if (text != "Home") {
+            var channel_container = document.querySelector('.channel-container');
         const request = new XMLHttpRequest();
         request.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
@@ -52,6 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         request.open('GET', `/${text}`, true);
         request.send();
+        }
     };
 
     function removeActive() {
@@ -71,6 +86,23 @@ document.addEventListener("DOMContentLoaded", function() {
             channel_links.forEach(element => {
                 element.className = "channel-list";
             });
+    }
+
+    function getChannelUrl(name) {
+        const request = new XMLHttpRequest();
+        request.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                data = this.responseText;
+                data = JSON.parse(data);
+                data.forEach(element => {
+                    console.log(element);
+                });
+            }
+        }
+        let url = `/${current_workspace}/${name}`;
+        console.log(url);
+        request.open('GET', url, true);
+        request.send();
     }
 });
     
