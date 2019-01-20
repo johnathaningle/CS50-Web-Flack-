@@ -73,6 +73,11 @@ aside {
         width: $team-hover-border-size + $team-icon-size;
         margin-top: $large-spacing - $team-hover-border-size;
     }
+    &.active {
+        -webkit-box-shadow:0px 0px 0px 5\3px $active-color;
+    -moz-box-shadow:0px 0px  0px 3px $active-color;
+    box-shadow:0px 0px 0px 3px $active-color;
+    }
 }
 
 .team-name {
