@@ -12,7 +12,7 @@ def index():
         workspace_list = {}
         c_list = []
         workspace = current_user.workspaces[0]
-        workspace_list[workspace.name[:2]] = workspace.name
+        workspace_list[workspace.name[:2]] = workspace.name.replace(" ", "_")
         channels = workspace.channels
         print(channels)
         for channel in channels:
@@ -84,4 +84,10 @@ def logout():
 
 @app.route("/<workspace>")
 def workspace(workspace):
-    pass
+    workspace = workspace.replace("_", " ")
+    channel_list = []
+    space = Workspace.query.filter_by(name=workspace).first()
+    channels = space.channels
+    for i in channels:
+        channel_list.append(i.name)
+    return jsonify(channel_list)
