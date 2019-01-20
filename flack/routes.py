@@ -1,5 +1,5 @@
 from flack import app, db
-from flack.models import User, Workspace
+from flack.models import User, Workspace, Channel, Message
 from flack.forms import RegistrationForm, LoginForm
 from flask import render_template, redirect, flash, url_for, request, jsonify, session
 from flask_login import login_user, current_user, logout_user
@@ -10,19 +10,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 def index():
     if current_user.is_authenticated:
         workspace_list = {}
-        c_list = []
-        workspace = current_user.workspaces[0]
-        workspace_list[workspace.name[:2]] = workspace.name
-        channels = workspace.channels
-        print(channels)
-        for channel in channels:
-            c_list.append(channel.name)
-        print(c_list)
-        if c_list is None:
-            return render_template('index.html', workspaces=workspace_list, user=current_user.username)
-        else:
-            return render_template('index.html', workspaces=workspace_list, user=current_user.username, chan=c_list)
-        
+        for workspace in current_user.workspaces:
+            workspace_list[workspace.name[:2]] = workspace.name.replace(" ", "_")
+        return render_template('index.html', workspaces=workspace_list, user=current_user.username)  
     else:
         return redirect(url_for('login'))
 
@@ -84,4 +74,50 @@ def logout():
 
 @app.route("/<workspace>")
 def workspace(workspace):
-    pass
+    workspace = workspace.replace("_", " ")
+    channel_list = []
+    space = Workspace.query.filter_by(name=workspace).first()
+    try:
+        chans = space.channels
+        for i in chans:
+            channel_list.append(i.name)
+        return jsonify(channel_list)
+    except AttributeError:
+        print("Invalid Workspace name")
+
+@app.route("/<workspace>/<channel_name>")
+def get_channel(workspace, channel_name):
+    workspace = workspace.replace("_", " ")
+    channel_name = channel_name.replace("_", " ")
+    channel_list = []
+    channel_id = ''
+    space = Workspace.query.filter_by(name=workspace).first()
+    chans = space.channels
+    for i in chans:
+        name = i.name
+        print(f"{channel_name} {name}")
+        if name == channel_name:
+            channel_id = i.id
+            print(i.id)
+        channel_list.append(name)
+    if channel_id:
+        data = []
+        messages = Message.query.filter_by(channel_id=channel_id).all()
+        print(messages)
+        for row in messages:
+            contents = {}
+            contents['content'] = row.content
+            contents['username'] = row.sender.username
+            data.append(dict(contents))
+        return jsonify(data)
+    else:
+        space = Workspace.query.filter_by(name=workspace).first()
+        c = Channel(name=channel_name)
+        u = User.query.get(current_user.id)
+        db.session.add(c)
+        db.session.commit()
+        space.channels.append(c)
+        c.users.append(u)
+        db.session.commit()
+        data = [{'new-channel': 'success'}]
+        return jsonify(data)
