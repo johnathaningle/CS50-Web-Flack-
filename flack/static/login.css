@@ -50,6 +50,7 @@ img {
     margin-top: -8%;
     padding: 20px;
     width: 400px;
+    margin-top: -200px !important;
     -webkit-box-shadow:0px 1px 5px #b9b9b9;
     -moz-box-shadow:0px 1px 5px #b9b9b9;
     box-shadow:0px 1px 5px #b9b9b9;
@@ -99,4 +100,8 @@ img {
 hr {
     border: 1px solid #dddddd;
     margin-bottom: 20px;
+}
+
+.flash-message {
+    margin-top: 60px;
 }

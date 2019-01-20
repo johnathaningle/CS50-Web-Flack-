@@ -33,12 +33,12 @@ html, body {
     overflow: hidden;
 }
 
-
 main {
     display: flex;
     flex-direction: row;
     height: 100%;
 }
+
 
 aside {
     background-color: $column-bg;
@@ -72,6 +72,11 @@ aside {
         height: $team-hover-border-size + $team-icon-size;
         width: $team-hover-border-size + $team-icon-size;
         margin-top: $large-spacing - $team-hover-border-size;
+    }
+    &.active {
+        -webkit-box-shadow:0px 0px 0px 5\3px $active-color;
+    -moz-box-shadow:0px 0px  0px 3px $active-color;
+    box-shadow:0px 0px 0px 3px $active-color;
     }
 }
 
@@ -144,6 +149,8 @@ aside {
 }
 
 nav {
+    position: fixed;
+    margin-right: -$large-spacing;
     padding-left: $large-spacing;
     display: flex;
     flex-direction: row;
@@ -153,6 +160,17 @@ nav {
     -webkit-box-shadow:0px 1px 5px #b9b9b9;
     -moz-box-shadow:0px 1px 5px #b9b9b9;
     box-shadow:0px 1px 5px #b9b9b9;
+}
+
+.navbar, .navbar-brand {
+    color: $team-bg;
+    ul, li, a {
+        color: $team-bg !important; 
+    }
+}
+
+.main-area {
+    margin-top: $large-spacing;
 }
 
 .flash-message {
@@ -176,4 +194,5 @@ nav {
 .danger {
     background: $warning-color;
 }
+
 

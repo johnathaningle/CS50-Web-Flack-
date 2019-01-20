@@ -14,6 +14,11 @@ db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
 db.Column('channel_id', db.Integer, db.ForeignKey('channel.id'))
 )
 
+user_workspaces = db.Table('user_workspaces',
+db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+db.Column('workspace_id', db.Integer, db.ForeignKey('workspace.id'))
+)
+
 workspace_channels = db.Table('workspace_channels',
 db.Column('workspace_id', db.Integer, db.ForeignKey('workspace.id')),
 db.Column('channel_id', db.Integer, db.ForeignKey('channel.id'))
@@ -27,6 +32,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String)
     messages = db.relationship("Message", backref='sender', lazy=True)
+    workspaces = db.relationship("Workspace", secondary=user_workspaces, backref='workspaces', lazy=True)
 
 class Workspace(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -52,8 +58,8 @@ def bootstrap_data():
     print("database dropped")
     db.create_all()
     print("database created")
-    u1 = User(username='jingle', password="password", email="j@email.co")
-    u2 = User(username='admin', password="supersecret", email="admin@email.co")
+    u1 = User(username='greg', password="password", email="j@email.co")
+    u2 = User(username='bob', password="supersecret", email="bob@email.co")
     u3 = User(username='bsname', password="pawoaman", email="bse@email.co")
     c1 = Channel(name="General")
     c2 = Channel(name="Random")
@@ -74,6 +80,10 @@ def bootstrap_data():
     db.session.add(w1)
     #assign users to channel
     c1.users.extend((u1, u2, u3))
+    #assign workspaces to users
+    u1.workspaces.append(w1)
+    u2.workspaces.append(w1)
+    u3.workspaces.append(w1)
     #add channels to workspace
     w1.channels.extend((c1, c2, c3))
     #assign messages to users
@@ -95,3 +105,9 @@ def bootstrap_data():
         x = i.users
         for z in x:
             print("\t"+z.username)
+    #find the workspaces and channels for a particular user
+    user1_workspace = u1.workspaces
+    for workspace in user1_workspace:
+        print(workspace.name)
+        for channel in workspace.channels:
+            print(channel.name)
