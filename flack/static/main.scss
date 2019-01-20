@@ -136,9 +136,13 @@ aside {
 }
 
 .add-channel {
+    color: $channel-text-color;
     position: relative;
     left: $column-size - 100;
     top: -5px;
+    &:hover {
+        color: #fff;
+    }
 }
 
 .icon {

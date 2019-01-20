@@ -28,7 +28,7 @@
             <!--workspace-->
             <div class="teams">
                 <div class="team active">
-                    <p class="team-name" id="home"><i class="fas fa-home"></i></p>
+                    <p class="team-name" id="Home"><i class="fas fa-home"></i></p>
                 </div>
                 {% if workspaces %}
                 {% for space, id in workspaces.items() %}
@@ -48,49 +48,34 @@
             <!---->
             <div class="workspace-column">
                 <i class="far fa-bell icon notification"></i>
-                <h1 class="workspace-name">Flask Workspace</h1>
+                <h1 class="workspace-name">Home</h1>
                 <p class="username-text">{{ user }}</p>
 
                 <h4>Channels</h4>
-                <i class="fas fa-plus icon add-channel"></i>
-                {% if chan %}
-                {% for channel in chan %}
-                <div class="channel-list">
-                    <p># {{channel}}</p>
+                <a class="add-channel" href="#channel-toggle" data-toggle="collapse" aria-expanded="false" aria-controls="channel-toggle"><i class="fas fa-plus"></i></a>
+                <div class="collapse pr-4" id="channel-toggle">
+                    <input class="form-control-sm mt-2 mr-2" type="text" placeholder="Channel Name">
+                    <button class="btn btn-secondary form-control-sm m-3" type="button" id="add-channel-button">Add Channel</button>
                 </div>
-                {% endfor %}
-                {% endif %}
+                <div class="channel-container">
+                </div>
                 <h4>Direct Messages</h4>
             </div>
         </aside>
         <div class="container-fluid">
             <nav class="navbar navbar-expand-md">
-                <a class="navbar-brand" href="#"># Channel</a>
+                <a class="navbar-brand" href="#"># Home</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
                     aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Second Link</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">Dropdown</a>
-                            <div class="dropdown-menu" aria-labelledby="dropdown01">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                        </li>
-                    </ul>
-                    <form class="form-inline">
+                    <form class="form-inline ml-auto">
                             <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
                             <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
                             <a href="{{url_for('logout')}}" class="btn btn-secondary my-2 my-sm-0 ml-3 mr-3"><i class="fas fa-sign-out-alt"></i></a>
-                        </form>
+                    </form>
                 </div>
             </nav>
 

@@ -10,18 +10,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 def index():
     if current_user.is_authenticated:
         workspace_list = {}
-        c_list = []
-        workspace = current_user.workspaces[0]
-        workspace_list[workspace.name[:2]] = workspace.name.replace(" ", "_")
-        channels = workspace.channels
-        print(channels)
-        for channel in channels:
-            c_list.append(channel.name)
-        print(c_list)
-        if c_list is None:
-            return render_template('index.html', workspaces=workspace_list, user=current_user.username)
-        else:
-            return render_template('index.html', workspaces=workspace_list, user=current_user.username, chan=c_list)
+        for workspace in current_user.workspaces:
+            workspace_list[workspace.name[:2]] = workspace.name.replace(" ", "_")
+        return render_template('index.html', workspaces=workspace_list, user=current_user.username)
         
     else:
         return redirect(url_for('login'))
