@@ -3,6 +3,7 @@ from flack.models import User, Workspace, Channel, Message
 from flack.forms import RegistrationForm, LoginForm
 from flask import render_template, redirect, flash, url_for, request, jsonify, session
 from flask_login import login_user, current_user, logout_user
+from flask_socketio import emit, join_room, send
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -124,8 +125,11 @@ def get_channel(workspace, channel_name):
 
 @socketio.on('message')
 def handle_message(message):
-    print('recieved message: ' + message)
+    print('recieved message: ' +str(message))
+    send(message, broadcast=True)
 
-@socketio.on('json')
-def handle_json(json):
-    print(f"recived json {str(json)}")
+
+
+@socketio.on('join')
+def join(message):
+    pass

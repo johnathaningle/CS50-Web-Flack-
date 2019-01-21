@@ -1,12 +1,10 @@
 var current_workspace = '';
-var socket = io.connect('http://' + document.domain + ":" + location.port);
+var current_channel = '';
+var baseURL = `http://${document.domain}:${location.port}`;
+var socket = io.connect(baseURL);
 
 document.addEventListener("DOMContentLoaded", function() {
-
-    socket.on('connect', function(){
-        console.log("socket connected");
-        socket.send('User connected');
-    });
+    //Query Selectors
     const sendButton = document.querySelector('#message-send');
     const messageInput = document.querySelector('#message-input');
     const mainArea = document.querySelector('.main-area');
@@ -15,6 +13,32 @@ document.addEventListener("DOMContentLoaded", function() {
     var channel_links = document.querySelectorAll('.channel-list');
     const addChannelButton = document.querySelector('#add-channel-button');
 
+    //Socket functions
+    socket.on('connect', function(){
+        console.log("socket connected");
+        socket.send('User connected');
+    });
+
+    socket.on('message', function(msg){
+        createMessage(msg.message, "Username");
+    });
+
+    socket.on('from General', function(message){
+        console.log(message);
+    });
+
+    sendButton.addEventListener("click", function(e){
+        let msgText = messageInput.value;
+        let message = {
+            'workspace': current_workspace,
+            'channel': current_channel,
+            'message': msgText
+        }
+        socket.send(message);
+    });
+    //end socket functions
+
+
     addChannelButton.addEventListener('click', function(e) {
         let newChannelField = document.querySelector('#new-channel-name')
         let name = newChannelField.value;
@@ -22,27 +46,36 @@ document.addEventListener("DOMContentLoaded", function() {
         getChannelUrl(name);
     });
 
-    sendButton.addEventListener("click", function(e){
-        let msgText = messageInput.value;
-        socket.send(msgText);
-    });
 
     document.addEventListener('click', function(e){
         let element = e.target;
         console.log(element);
+
+        //load messages and change UI when user clicks on a channel
         if (element.className == "channel-list") {
             removeChannelActive();
             heading.innerText = element.firstElementChild.innerText;
-            getChannelUrl(element.firstElementChild.innerText.replace("# ", ""));
+            let channelName = element.firstElementChild.innerText.replace("# ", "");
+            current_channel = channelName;
+            getChannelUrl(channelName);
             element.className = "channel-list active";
         } else if (element.className == "channel-item") {
             removeChannelActive();
             heading.innerText = element.innerText;
-            getChannelUrl(element.innerText.replace("# ", ""));
+            let channelName = element.innerText.replace("# ", "");
+            current_channel = channelName;
+            getChannelUrl(channelName);
             element.parentElement.className = "channel-list active";
+        }
+        //close the flashed message
+        if (element.className == "far fa-times-circle flash-close") {
+            const flashMessage = document.querySelector('.flash-message');
+            const currClasses = flashMessage.className;
+            flashMessage.className = `${currClasses} hiding`;
         }
     });
 
+    //Function for changing workspace
     x.forEach(element => {
         element.addEventListener("click", function(e){
             removeActive();
@@ -55,9 +88,10 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 
+    //get the list of channels
     function load_page(text) {
         console.log('searching');
-        if (text != "Home") {
+        if (text != "Home" && text != "add-team") {
             var channel_container = document.querySelector('.channel-container');
         const request = new XMLHttpRequest();
         request.onreadystatechange = function () {
@@ -105,6 +139,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
 
+    //get messages when user clicks on channel
     function getChannelUrl(name) {
         const request = new XMLHttpRequest();
         request.onreadystatechange = function () {
