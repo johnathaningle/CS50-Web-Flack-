@@ -1,4 +1,4 @@
-from flack import app, db
+from flack import app, db, socketio
 from flack.models import User, Workspace, Channel, Message
 from flack.forms import RegistrationForm, LoginForm
 from flask import render_template, redirect, flash, url_for, request, jsonify, session
@@ -121,3 +121,11 @@ def get_channel(workspace, channel_name):
         db.session.commit()
         data = [{'new-channel': 'success'}]
         return jsonify(data)
+
+@socketio.on('message')
+def handle_message(message):
+    print('recieved message: ' + message)
+
+@socketio.on('json')
+def handle_json(json):
+    print(f"recived json {str(json)}")

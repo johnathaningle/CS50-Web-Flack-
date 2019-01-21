@@ -1,8 +1,16 @@
 var current_workspace = '';
+var socket = io.connect('http://' + document.domain + ":" + location.port);
+
 document.addEventListener("DOMContentLoaded", function() {
+
+    socket.on('connect', function(){
+        console.log("socket connected");
+        socket.send('User connected');
+    });
+    const sendButton = document.querySelector('#message-send');
+    const messageInput = document.querySelector('#message-input');
     const mainArea = document.querySelector('.main-area');
     var x = document.querySelectorAll(".team-name");
-    console.log(x);
     const heading = document.querySelector(".navbar-brand");
     var channel_links = document.querySelectorAll('.channel-list');
     const addChannelButton = document.querySelector('#add-channel-button');
@@ -12,6 +20,11 @@ document.addEventListener("DOMContentLoaded", function() {
         let name = newChannelField.value;
         name = name.replace(" ", "_");
         getChannelUrl(name);
+    });
+
+    sendButton.addEventListener("click", function(e){
+        let msgText = messageInput.value;
+        socket.send(msgText);
     });
 
     document.addEventListener('click', function(e){
