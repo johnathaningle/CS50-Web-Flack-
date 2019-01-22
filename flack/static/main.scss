@@ -110,12 +110,19 @@ aside {
 
 }
 
-.channel-list {
+.channel-list, .user-list {
     margin-left: -$large-spacing;
     padding-top: $small-spacing;
     padding-bottom: $small-spacing; 
     padding-left: $large-spacing;
     color: $channel-text-color;
+    p {
+        padding-left: $small-spacing;
+    }
+    a {
+        color: $channel-text-color;
+    }
+
     &:hover {
         color: white;
         background: $medium-overlay;
@@ -123,6 +130,13 @@ aside {
     &.active {
         background: $active-color;
         color: white;
+    }
+
+    .indicator {
+        margin-right: $large-spacing;
+        #active {
+            color: $success-color;
+        }
     }
 }
 

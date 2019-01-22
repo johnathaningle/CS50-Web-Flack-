@@ -2,6 +2,7 @@ var current_workspace = '';
 var current_channel = '';
 var baseURL = `http://${document.domain}:${location.port}`;
 var socket = io.connect(baseURL);
+var private_message = false;
 
 document.addEventListener("DOMContentLoaded", function() {
     //Query Selectors
@@ -43,6 +44,7 @@ document.addEventListener("DOMContentLoaded", function() {
         element.addEventListener("click", function(e){
             removeActive();
             clearChannels();
+            clearUsers();
             text = this.id;
             current_workspace = text;
             this.parentElement.className = "team active";
@@ -92,13 +94,16 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log('searching');
         if (text != "Home" && text != "add-team") {
             var channel_container = document.querySelector('.channel-container');
+            var user_container = document.querySelector('.user-container');
         const request = new XMLHttpRequest();
         request.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 data = this.responseText;
                 data = JSON.parse(data);
                 if (data) {
-                    data.forEach(item => {
+                    channels = data.channels;
+                    users = data.users;
+                    channels.forEach(item => {
                         let newDiv = document.createElement('div');
                         let ptag = document.createElement("p");
                         newDiv.className = 'channel-list';
@@ -106,6 +111,15 @@ document.addEventListener("DOMContentLoaded", function() {
                         ptag.className = 'channel-item';
                         newDiv.appendChild(ptag);
                         channel_container.appendChild(newDiv);
+                    });
+                    users.forEach(item => {
+                        let newDiv = document.createElement('div');
+                        let ptag = document.createElement("p");
+                        newDiv.className = 'user-list';
+                        ptag.innerHTML = `<i class="fas fa-circle indicator" id="inactive"></i>${item}`;
+                        ptag.className = 'user-item';
+                        newDiv.appendChild(ptag);
+                        user_container.appendChild(newDiv);
                     });
                 }
             }
@@ -125,6 +139,11 @@ document.addEventListener("DOMContentLoaded", function() {
     function clearChannels() {
         var channel_container = document.querySelector('.channel-container');
         channel_container.innerHTML='';
+    }
+
+    function clearUsers() {
+        var user_container = document.querySelector('.user-container');
+        user_container.innerHTML = '';
     }
 
     function clearMessages() {

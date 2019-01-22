@@ -54,6 +54,9 @@ def register():
         u1 = User(username=form_username, email=form_email, password=form_password)
         if workspace:
             db.session.add(u1)
+            w_channels = workspace.channels
+            for channel in w_channels:
+                channel.users.append(u1)
             u1.workspaces.append(workspace)
         else:
             db.session.add(u1)
@@ -61,8 +64,6 @@ def register():
             db.session.add(w1)
             db.session.commit()
             u1.workspaces.append(w1)
-        
-        
         db.session.commit()
         flash(f"Account created for {form.username.data}", category='success')
         return (redirect(url_for('login')))
@@ -73,18 +74,28 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+#return a list of channels and workspaces
 @app.route("/<workspace>")
 def workspace(workspace):
     workspace = workspace.replace("_", " ")
+    data = {}
     channel_list = []
+    user_set = set()
     space = Workspace.query.filter_by(name=workspace).first()
     try:
         chans = space.channels
         for i in chans:
+            c_users = i.users
             channel_list.append(i.name)
-        return jsonify(channel_list)
+            for user in c_users:
+                user_set.add(user.username)
+        print(user_set)
+        data["channels"] = channel_list
+        data["users"] = list(user_set)
+        return jsonify(data)
     except AttributeError:
         print("Invalid Workspace name")
+        return jsonify({"channels": "none"})
 
 @app.route("/<workspace>/<channel_name>")
 def get_channel(workspace, channel_name):
@@ -137,28 +148,31 @@ def remove_message(messageid):
 
 @socketio.on('message')
 def handle_message(message):
-    message = dict(message)
-    user = current_user.username
-    workspace = message['workspace']
-    channel = message['channel']
-    c_name = channel.replace("_", " ")
-    w_name = workspace.replace('_', ' ')
-    content = message['message']
-    if workspace != '' and channel != "":
-        m = Message(content=content)
-        db.session.add(m)
-        db.session.commit()
-        current_user.messages.append(m)
-        w = Workspace.query.filter_by(name=w_name).first()
-        w_channels = w.channels
-        for channel in w_channels:
-            channel_name = channel.name
-            if channel_name == c_name:
-                print(f"Channel name: {channel_name} matches!")
-                channel.messages.append(m)
-                db.session.commit()
-        message['user'] = user
-        send({"status": 1}, broadcast=True)
+    try:
+        message = dict(message)
+        user = current_user.username
+        workspace = message['workspace']
+        channel = message['channel']
+        c_name = channel.replace("_", " ")
+        w_name = workspace.replace('_', ' ')
+        content = message['message']
+        if workspace != '' and channel != "":
+            m = Message(content=content)
+            db.session.add(m)
+            db.session.commit()
+            current_user.messages.append(m)
+            w = Workspace.query.filter_by(name=w_name).first()
+            w_channels = w.channels
+            for channel in w_channels:
+                channel_name = channel.name
+                if channel_name == c_name:
+                    print(f"Channel name: {channel_name} matches!")
+                    channel.messages.append(m)
+                    db.session.commit()
+            message['user'] = user
+            send({"status": 1}, broadcast=True)
+    except ValueError:
+        pass
 
 
 @socketio.on('join')

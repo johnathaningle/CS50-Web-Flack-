@@ -115,7 +115,7 @@ aside {
   color: white;
 }
 
-.channel-list {
+.channel-list, .user-list {
   margin-left: -15px;
   padding-top: 5px;
   padding-bottom: 5px;
@@ -123,14 +123,30 @@ aside {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.channel-list:hover {
+.channel-list p, .user-list p {
+  padding-left: 5px;
+}
+
+.channel-list a, .user-list a {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.channel-list:hover, .user-list:hover {
   color: white;
   background: rgba(0, 0, 0, 0.15);
 }
 
-.channel-list.active {
+.channel-list.active, .user-list.active {
   background: #4C9689;
   color: white;
+}
+
+.channel-list .indicator, .user-list .indicator {
+  margin-right: 15px;
+}
+
+.channel-list .indicator #active, .user-list .indicator #active {
+  color: #5DB09D;
 }
 
 .username-text {

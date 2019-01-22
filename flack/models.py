@@ -118,3 +118,7 @@ def bootstrap_data():
         print(workspace.name)
         for channel in workspace.channels:
             print(channel.name)
+
+    #find all the users for a given workspace
+    w = Workspace.query.filter_by(name="Flack Workspace").first()
+    
