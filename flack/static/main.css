@@ -303,6 +303,17 @@ nav {
           align-items: center;
 }
 
+.message .message-close {
+  position: relative;
+  float: right;
+  top: 5px;
+  color: #4D5250;
+}
+
+.message .message-close:hover {
+  color: #DE4C0D;
+}
+
 .message img {
   height: 35px;
   width: 35px;

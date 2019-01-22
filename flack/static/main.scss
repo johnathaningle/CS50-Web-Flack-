@@ -261,6 +261,15 @@ nav {
         justify-content: center;
         align-items: center;
     }
+    .message-close {
+        position: relative;
+        float: right;
+        top: 5px;
+        color: $team-bg;
+        &:hover {
+            color: $warning-color;
+        }
+    }
     img {
         height: 35px;
         width: 35px;

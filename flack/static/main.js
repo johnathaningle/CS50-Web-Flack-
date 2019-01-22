@@ -20,59 +20,22 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     socket.on('message', function(msg){
-        createMessage(msg.message, "Username");
+        getChannelUrl(current_channel);
     });
-
-    socket.on('from General', function(message){
-        console.log(message);
-    });
-
+    //send message
     sendButton.addEventListener("click", function(e){
         let msgText = messageInput.value;
-        let message = {
-            'workspace': current_workspace,
-            'channel': current_channel,
-            'message': msgText
-        }
+        let message = { 'workspace': current_workspace, 'channel': current_channel, 'message': msgText };
         socket.send(message);
     });
     //end socket functions
 
-
+    //adding a new channel
     addChannelButton.addEventListener('click', function(e) {
         let newChannelField = document.querySelector('#new-channel-name')
         let name = newChannelField.value;
         name = name.replace(" ", "_");
         getChannelUrl(name);
-    });
-
-
-    document.addEventListener('click', function(e){
-        let element = e.target;
-        console.log(element);
-
-        //load messages and change UI when user clicks on a channel
-        if (element.className == "channel-list") {
-            removeChannelActive();
-            heading.innerText = element.firstElementChild.innerText;
-            let channelName = element.firstElementChild.innerText.replace("# ", "");
-            current_channel = channelName;
-            getChannelUrl(channelName);
-            element.className = "channel-list active";
-        } else if (element.className == "channel-item") {
-            removeChannelActive();
-            heading.innerText = element.innerText;
-            let channelName = element.innerText.replace("# ", "");
-            current_channel = channelName;
-            getChannelUrl(channelName);
-            element.parentElement.className = "channel-list active";
-        }
-        //close the flashed message
-        if (element.className == "far fa-times-circle flash-close") {
-            const flashMessage = document.querySelector('.flash-message');
-            const currClasses = flashMessage.className;
-            flashMessage.className = `${currClasses} hiding`;
-        }
     });
 
     //Function for changing workspace
@@ -87,6 +50,42 @@ document.addEventListener("DOMContentLoaded", function() {
             load_page(text);
         });
     });
+
+    document.addEventListener('click', function(e){
+        let element = e.target;
+
+        //load messages and change UI when user clicks on a channel
+        if (element.className == "channel-list") {
+            removeChannelActive();
+            heading.innerText = element.firstElementChild.innerText;
+            let channelName = element.firstElementChild.innerText.replace("# ", "");
+            current_channel = channelName;
+            getChannelUrl(channelName);
+            in_room = true;
+            element.className = "channel-list active";
+        } else if (element.className == "channel-item") {
+            removeChannelActive();
+            heading.innerText = element.innerText;
+            let channelName = element.innerText.replace("# ", "");
+            current_channel = channelName;
+            in_room = true;
+            getChannelUrl(channelName);
+            element.parentElement.className = "channel-list active";
+        }
+        //close the flashed message
+        if (element.className == "far fa-times-circle flash-close") {
+            const flashMessage = document.querySelector('.flash-message');
+            const currClasses = flashMessage.className;
+            flashMessage.className = `${currClasses} hiding`;
+        }
+        //remove message
+        if (element.className == "far fa-times-circle message-close") {
+            let messageDivId = element.parentElement.getAttribute('id');
+            removeMessage(messageDivId);
+            getChannelUrl(current_channel);
+        }
+    });
+
 
     //get the list of channels
     function load_page(text) {
@@ -139,6 +138,21 @@ document.addEventListener("DOMContentLoaded", function() {
             });
     }
 
+    // remove a message 
+    function removeMessage(id) {
+        const request = new XMLHttpRequest();
+        request.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                clearMessages();
+                getChannelUrl(current_channel);
+            }
+        }
+        let url = `/rm/${id}`;
+        console.log(url);
+        request.open('GET', url, true);
+        request.send();
+    };
+
     //get messages when user clicks on channel
     function getChannelUrl(name) {
         const request = new XMLHttpRequest();
@@ -148,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 data = JSON.parse(data);
                 clearMessages()
                 data.forEach(element => {
-                    createMessage(element.content, element.username);
+                    createMessage(element.content, element.username, element.id);
                 });
             }
         }
@@ -158,9 +172,13 @@ document.addEventListener("DOMContentLoaded", function() {
         request.send();
     }
 
-    function createMessage(content, username) {
+    function createMessage(content, username, id) {
         let messageDiv = document.createElement('div');
         messageDiv.className = "message shadow-sm";
+        messageDiv.id = id;
+        let closeButton = document.createElement('i');
+        closeButton.classList = "far fa-times-circle message-close";
+        messageDiv.appendChild(closeButton);
         let rowDiv = document.createElement('div');
         rowDiv.className = 'row';
         let picDiv = document.createElement('div');

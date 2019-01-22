@@ -96,10 +96,8 @@ def get_channel(workspace, channel_name):
     chans = space.channels
     for i in chans:
         name = i.name
-        print(f"{channel_name} {name}")
         if name == channel_name:
             channel_id = i.id
-            print(i.id)
         channel_list.append(name)
     if channel_id:
         data = []
@@ -107,6 +105,7 @@ def get_channel(workspace, channel_name):
         print(messages)
         for row in messages:
             contents = {}
+            contents["id"] = row.id
             contents['content'] = row.content
             contents['username'] = row.sender.username
             data.append(dict(contents))
@@ -123,13 +122,53 @@ def get_channel(workspace, channel_name):
         data = [{'new-channel': 'success'}]
         return jsonify(data)
 
+@app.route('/rm/<messageid>')
+def remove_message(messageid):
+    m = Message.query.get(messageid)
+    sender_id = m.sender.id
+    print(f"Sender: {sender_id} Current: {current_user.id}")
+    if sender_id == current_user.id:
+        print("deleting message")
+        db.session.execute(f"DELETE FROM message WHERE id={messageid}")
+        db.session.commit()
+    else:
+        print("no such message")
+    
+
 @socketio.on('message')
 def handle_message(message):
-    print('recieved message: ' +str(message))
-    send(message, broadcast=True)
-
+    message = dict(message)
+    user = current_user.username
+    workspace = message['workspace']
+    channel = message['channel']
+    c_name = channel.replace("_", " ")
+    w_name = workspace.replace('_', ' ')
+    content = message['message']
+    if workspace != '' and channel != "":
+        m = Message(content=content)
+        db.session.add(m)
+        db.session.commit()
+        current_user.messages.append(m)
+        w = Workspace.query.filter_by(name=w_name).first()
+        w_channels = w.channels
+        for channel in w_channels:
+            channel_name = channel.name
+            if channel_name == c_name:
+                print(f"Channel name: {channel_name} matches!")
+                channel.messages.append(m)
+                db.session.commit()
+        message['user'] = user
+        send({"status": 1}, broadcast=True)
 
 
 @socketio.on('join')
-def join(message):
-    pass
+def join(data):
+    print("user joined")
+    room = data['channel']
+    join_room(room)
+    user = current_user.username
+    data['user'] = user
+    emit('joined', data, room=room)
+
+
+
