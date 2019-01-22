@@ -52,6 +52,13 @@ class Message(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     channel_id = db.Column(db.Integer, db.ForeignKey("channel.id"))
 
+class PrivateMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String)
+    sender = db.Column(db.String)
+    reciever = db.Column(db.String)
+
+
 @app.cli.command('bootstrap')
 def bootstrap_data():
     db.drop_all()
