@@ -22,8 +22,12 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     socket.on('message', function(msg){
+        console.log(msg);
         if (msg.status == 1) {
             getChannelUrl(current_channel);
+        } 
+        if (msg.status == 2) {
+            getPrivateMessages(private_username);
         }
     });
     //send message
@@ -99,6 +103,7 @@ document.addEventListener("DOMContentLoaded", function() {
             private_username = username;
             private_message = true;
             createHeadingMessage(username);
+            getPrivateMessages(username);
             element.className = "user-list active";
         } else if (element.className == "user-item") {
             clearMessages();
@@ -108,6 +113,7 @@ document.addEventListener("DOMContentLoaded", function() {
             private_username = username;
             private_message = true;
             createHeadingMessage(username);
+            getPrivateMessages(username);
             element.parentElement.className = "user-list active";
         }
         //close the flashed message
@@ -237,9 +243,25 @@ document.addEventListener("DOMContentLoaded", function() {
         request.send();
     }
     //load private messages
-    function getPrivateMessages() {
-        
+    function getPrivateMessages(private_username) {
+        console.log('getting private messages');
+        const request = new XMLHttpRequest();
+        request.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                data = this.responseText;
+                data = JSON.parse(data);
+                clearMessages()
+                data.forEach(element => {
+                    createMessage(element.content, element.username, element.id);
+                });
+            }
+        }
+        let url = `/pm/${private_username}`;
+        console.log(url);
+        request.open('GET', url, true);
+        request.send();
     }
+
     function createMessage(content, username, id) {
         let messageDiv = document.createElement('div');
         messageDiv.className = "message shadow-sm";

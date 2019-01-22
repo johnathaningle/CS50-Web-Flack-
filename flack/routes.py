@@ -133,6 +133,23 @@ def get_channel(workspace, channel_name):
         data = [{'new-channel': 'success'}]
         return jsonify(data)
 
+@app.route('/pm/<username>')
+def get_private_messages(username):
+    m = []
+    message_list = []
+    m1 = PrivateMessage.query.filter_by(sender=current_user.username).filter_by(reciever=username).all()
+    m2 = PrivateMessage.query.filter_by(reciever=current_user.username).filter_by(sender=username).all()
+    m.extend((m1, m2))
+    for msg in m:
+        for field in msg:
+            message = {}
+            message['username'] = field.sender
+            message['content'] = field.content
+            message['id'] = field.id
+            message_list.append(message)
+    return jsonify(message_list)
+
+
 @app.route('/rm/<messageid>')
 def remove_message(messageid):
     m = Message.query.get(messageid)
@@ -183,14 +200,6 @@ def handle_message(message):
         pass
 
 
-@socketio.on('join')
-def join(data):
-    print("user joined")
-    room = data['channel']
-    join_room(room)
-    user = current_user.username
-    data['user'] = user
-    emit('joined', data, room=room)
 
 
 
