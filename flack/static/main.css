@@ -301,6 +301,11 @@ nav {
   padding: 15px;
 }
 
+.message h1 {
+  font-size: 25px;
+  margin-bottom: 15px;
+}
+
 .message .col-md-1 {
   display: -webkit-box;
   display: -ms-flexbox;

@@ -1,5 +1,5 @@
 from flack import app, db, socketio
-from flack.models import User, Workspace, Channel, Message
+from flack.models import User, Workspace, Channel, Message, PrivateMessage
 from flack.forms import RegistrationForm, LoginForm
 from flask import render_template, redirect, flash, url_for, request, jsonify, session
 from flask_login import login_user, current_user, logout_user
@@ -156,21 +156,29 @@ def handle_message(message):
         c_name = channel.replace("_", " ")
         w_name = workspace.replace('_', ' ')
         content = message['message']
-        if workspace != '' and channel != "":
-            m = Message(content=content)
-            db.session.add(m)
-            db.session.commit()
-            current_user.messages.append(m)
-            w = Workspace.query.filter_by(name=w_name).first()
-            w_channels = w.channels
-            for channel in w_channels:
-                channel_name = channel.name
-                if channel_name == c_name:
-                    print(f"Channel name: {channel_name} matches!")
-                    channel.messages.append(m)
-                    db.session.commit()
-            message['user'] = user
-            send({"status": 1}, broadcast=True)
+        if workspace != '':
+            if message["private_message"] == "False":
+                m = Message(content=content)
+                db.session.add(m)
+                db.session.commit()
+                current_user.messages.append(m)
+                w = Workspace.query.filter_by(name=w_name).first()
+                w_channels = w.channels
+                for channel in w_channels:
+                    channel_name = channel.name
+                    if channel_name == c_name:
+                        print(f"Channel name: {channel_name} matches!")
+                        channel.messages.append(m)
+                        db.session.commit()
+                message['user'] = user
+                send({"status": 1}, broadcast=True)
+            #if the message is private
+            else:
+                print('private message')
+                m = PrivateMessage(content=content, sender=current_user.username, reciever=message['reciever'])
+                db.session.add(m)
+                db.session.commit()
+                send({"status": 2}, broadcast=True)
     except ValueError:
         pass
 

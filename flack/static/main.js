@@ -3,6 +3,7 @@ var current_channel = '';
 var baseURL = `http://${document.domain}:${location.port}`;
 var socket = io.connect(baseURL);
 var private_message = false;
+var private_username = '';
 
 document.addEventListener("DOMContentLoaded", function() {
     //Query Selectors
@@ -21,13 +22,23 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     socket.on('message', function(msg){
-        getChannelUrl(current_channel);
+        if (msg.status == 1) {
+            getChannelUrl(current_channel);
+        }
     });
     //send message
     sendButton.addEventListener("click", function(e){
         let msgText = messageInput.value;
-        let message = { 'workspace': current_workspace, 'channel': current_channel, 'message': msgText };
-        socket.send(message);
+        if (private_message) {
+            let message = {'private_message': "True", "reciever": private_username, 'workspace': current_workspace, 'channel': current_channel, 'message': msgText };
+            console.log(message);
+            socket.send(message); 
+        } else {
+            let message = {'private_message': "False", "reciever": "",  'workspace': current_workspace, 'channel': current_channel, 'message': msgText };
+            console.log(message);
+            socket.send(message);
+        }
+       
     });
     //end socket functions
 
@@ -55,24 +66,49 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.addEventListener('click', function(e){
         let element = e.target;
-
         //load messages and change UI when user clicks on a channel
         if (element.className == "channel-list") {
             removeChannelActive();
+            removeUserActive();
             heading.innerText = element.firstElementChild.innerText;
             let channelName = element.firstElementChild.innerText.replace("# ", "");
+            private_username = '';
+            private_message = false;
             current_channel = channelName;
             getChannelUrl(channelName);
             in_room = true;
             element.className = "channel-list active";
         } else if (element.className == "channel-item") {
             removeChannelActive();
+            removeUserActive();
             heading.innerText = element.innerText;
             let channelName = element.innerText.replace("# ", "");
+            private_username = '';
+            private_message = false;
             current_channel = channelName;
             in_room = true;
             getChannelUrl(channelName);
             element.parentElement.className = "channel-list active";
+        }
+        //direct message - if user clicks on username in list for direct message
+        if (element.className == "user-list") {
+            clearMessages();
+            removeChannelActive();
+            removeUserActive();
+            username = element.firstElementChild.getAttribute('id');
+            private_username = username;
+            private_message = true;
+            createHeadingMessage(username);
+            element.className = "user-list active";
+        } else if (element.className == "user-item") {
+            clearMessages();
+            removeChannelActive();
+            removeUserActive();
+            username = element.getAttribute('id');
+            private_username = username;
+            private_message = true;
+            createHeadingMessage(username);
+            element.parentElement.className = "user-list active";
         }
         //close the flashed message
         if (element.className == "far fa-times-circle flash-close") {
@@ -115,8 +151,11 @@ document.addEventListener("DOMContentLoaded", function() {
                     users.forEach(item => {
                         let newDiv = document.createElement('div');
                         let ptag = document.createElement("p");
+                        let indicator = document.createElement('i')
+                        indicator.className = 'fas fa-circle indicator';
                         newDiv.className = 'user-list';
                         ptag.innerHTML = `<i class="fas fa-circle indicator" id="inactive"></i>${item}`;
+                        ptag.id = item;
                         ptag.className = 'user-item';
                         newDiv.appendChild(ptag);
                         user_container.appendChild(newDiv);
@@ -154,7 +193,14 @@ document.addEventListener("DOMContentLoaded", function() {
         let channel_links = document.querySelectorAll('.channel-list');
             channel_links.forEach(element => {
                 element.className = "channel-list";
-            });
+        });
+    }
+
+    function removeUserActive() {
+        let user_links = document.querySelectorAll('.user-list');
+        user_links.forEach(element => {
+            element.className = 'user-list';
+        });
     }
 
     // remove a message 
@@ -190,7 +236,10 @@ document.addEventListener("DOMContentLoaded", function() {
         request.open('GET', url, true);
         request.send();
     }
-
+    //load private messages
+    function getPrivateMessages() {
+        
+    }
     function createMessage(content, username, id) {
         let messageDiv = document.createElement('div');
         messageDiv.className = "message shadow-sm";
@@ -211,5 +260,24 @@ document.addEventListener("DOMContentLoaded", function() {
         messageDiv.appendChild(rowDiv);
         mainArea.appendChild(messageDiv);
     }
+
+    //create a private message popup
+    function createHeadingMessage(text) {
+        let messageDiv = document.createElement('div');
+        messageDiv.className = "message shadow-sm";
+        let rowDiv = document.createElement('div');
+        rowDiv.className = 'row';
+        let picDiv = document.createElement('div');
+        picDiv.className = 'col-md-1';
+        picDiv.innerHTML = '<img src="../static/img/icon.png" alt="profilepic" class="profile-picture">'
+        let contentDiv = document.createElement('div');
+        contentDiv.className = 'col-md-11';
+        contentDiv.innerHTML = `<h1>Private messages with:</h1><hr><p>${text}</p>`;
+        rowDiv.appendChild(picDiv);
+        rowDiv.appendChild(contentDiv);
+        messageDiv.appendChild(rowDiv);
+        mainArea.appendChild(messageDiv);
+    }
+
 });
     
