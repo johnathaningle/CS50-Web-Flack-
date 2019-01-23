@@ -169,8 +169,9 @@ def remove_message(messageid):
         print("deleting message")
         db.session.execute(f"DELETE FROM message WHERE id={messageid}")
         db.session.commit()
+        return jsonify({"status": 1})
     else:
-        print("no such message")
+        return jsonify({"status": 0})
     
 
 @socketio.on('message')
