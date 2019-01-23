@@ -102,7 +102,6 @@ document.addEventListener("DOMContentLoaded", function() {
             username = element.firstElementChild.getAttribute('id');
             private_username = username;
             private_message = true;
-            createHeadingMessage(username);
             getPrivateMessages(username);
             element.className = "user-list active";
         } else if (element.className == "user-item") {
@@ -112,7 +111,6 @@ document.addEventListener("DOMContentLoaded", function() {
             username = element.getAttribute('id');
             private_username = username;
             private_message = true;
-            createHeadingMessage(username);
             getPrivateMessages(username);
             element.parentElement.className = "user-list active";
         }
@@ -283,23 +281,6 @@ document.addEventListener("DOMContentLoaded", function() {
         mainArea.appendChild(messageDiv);
     }
 
-    //create a private message popup
-    function createHeadingMessage(text) {
-        let messageDiv = document.createElement('div');
-        messageDiv.className = "message shadow-sm";
-        let rowDiv = document.createElement('div');
-        rowDiv.className = 'row';
-        let picDiv = document.createElement('div');
-        picDiv.className = 'col-md-1';
-        picDiv.innerHTML = '<img src="../static/img/icon.png" alt="profilepic" class="profile-picture">'
-        let contentDiv = document.createElement('div');
-        contentDiv.className = 'col-md-11';
-        contentDiv.innerHTML = `<h1>Private messages with:</h1><hr><p>${text}</p>`;
-        rowDiv.appendChild(picDiv);
-        rowDiv.appendChild(contentDiv);
-        messageDiv.appendChild(rowDiv);
-        mainArea.appendChild(messageDiv);
-    }
 
 });
     

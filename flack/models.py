@@ -40,10 +40,12 @@ class Workspace(db.Model):
     description = db.Column(db.String, nullable=True)
     channels = db.relationship("Channel", secondary=workspace_channels, backref='channels', lazy=True)
 
+
 class Channel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     messages = db.relationship("Message", backref='message_channel', lazy=True)
+    private = db.Column(db.String)
     users = db.relationship("User", secondary=user_channels, backref='users', lazy=True)
 
 class Message(db.Model):
@@ -51,13 +53,6 @@ class Message(db.Model):
     content = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     channel_id = db.Column(db.Integer, db.ForeignKey("channel.id"))
-
-class PrivateMessage(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.String)
-    sender = db.Column(db.String)
-    reciever = db.Column(db.String)
-
 
 @app.cli.command('bootstrap')
 def bootstrap_data():
@@ -68,9 +63,9 @@ def bootstrap_data():
     u1 = User(username='greg', password="password", email="j@email.co")
     u2 = User(username='bob', password="supersecret", email="bob@email.co")
     u3 = User(username='bsname', password="pawoaman", email="bse@email.co")
-    c1 = Channel(name="General")
-    c2 = Channel(name="Random")
-    c3 = Channel(name="Labs")
+    c1 = Channel(name="General", private="false")
+    c2 = Channel(name="Random", private="false")
+    c3 = Channel(name="Labs", private="true")
     m1 = Message(content="Hey everyone, this is a message")
     m2 = Message(content="Hey ladies and gents, this is a second message")
     m3 = Message(content="Hey pythonistas, this is a third message")
@@ -119,6 +114,4 @@ def bootstrap_data():
         for channel in workspace.channels:
             print(channel.name)
 
-    #find all the users for a given workspace
-    w = Workspace.query.filter_by(name="Flack Workspace").first()
-    
+   

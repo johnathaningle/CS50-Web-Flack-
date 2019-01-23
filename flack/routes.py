@@ -1,10 +1,11 @@
 from flack import app, db, socketio
-from flack.models import User, Workspace, Channel, Message, PrivateMessage
+from flack.models import User, Workspace, Channel, Message
 from flack.forms import RegistrationForm, LoginForm
 from flask import render_template, redirect, flash, url_for, request, jsonify, session
 from flask_login import login_user, current_user, logout_user
 from flask_socketio import emit, join_room, send
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy import and_
 
 
 @app.route('/')
@@ -45,7 +46,7 @@ def register():
         print(f"{form_username} {form_password} {form_email} {form_workspace}")
         user = User.query.filter_by(username=form_username).first()
         email = User.query.filter_by(email=form_email).first()
-        workspace = Workspace.query.filter_by(name=form_workspace).first()
+        workspace = Workspace.query.filter(Workspace.name==form_workspace).first()
         if user:
             flash(f"Username {form.username.data} already exists", category='danger')
             return redirect(url_for('register'))
@@ -81,12 +82,13 @@ def workspace(workspace):
     data = {}
     channel_list = []
     user_set = set()
-    space = Workspace.query.filter_by(name=workspace).first()
+    space = Workspace.query.filter(Workspace.name==workspace).first()
     try:
         chans = space.channels
         for i in chans:
             c_users = i.users
-            channel_list.append(i.name)
+            if i.private == 'false':
+                channel_list.append(i.name)
             for user in c_users:
                 user_set.add(user.username)
         print(user_set)
@@ -111,6 +113,7 @@ def get_channel(workspace, channel_name):
             channel_id = i.id
         channel_list.append(name)
     if channel_id:
+        print(f"channel found {channel_id}")
         data = []
         messages = Message.query.filter_by(channel_id=channel_id).all()
         print(messages)
@@ -121,9 +124,10 @@ def get_channel(workspace, channel_name):
             contents['username'] = row.sender.username
             data.append(dict(contents))
         return jsonify(data)
+    #if the channel was not found, create a new one
     else:
         space = Workspace.query.filter_by(name=workspace).first()
-        c = Channel(name=channel_name)
+        c = Channel(name=channel_name, private='false')
         u = User.query.get(current_user.id)
         db.session.add(c)
         db.session.commit()
@@ -135,19 +139,25 @@ def get_channel(workspace, channel_name):
 
 @app.route('/pm/<username>')
 def get_private_messages(username):
-    m = []
     message_list = []
-    m1 = PrivateMessage.query.filter_by(sender=current_user.username).filter_by(reciever=username).all()
-    m2 = PrivateMessage.query.filter_by(reciever=current_user.username).filter_by(sender=username).all()
-    m.extend((m1, m2))
-    for msg in m:
-        for field in msg:
+    user1 = User.query.filter_by(username=username).first()
+    channel_name = ""
+    if user1.id > current_user.id:
+        channel_name = f"{current_user.username}{current_user.id}{user1.username}{user1.id}"
+    else:
+        channel_name = f"{user1.username}{user1.id}{current_user.username}{current_user.id}"
+    private_channel = Channel.query.filter_by(name=channel_name).first()
+    if private_channel:
+        messages = Message.query.filter_by(channel_id=private_channel.id).all()
+        for field in messages:
             message = {}
-            message['username'] = field.sender
+            message['username'] = field.sender.username
             message['content'] = field.content
             message['id'] = field.id
             message_list.append(message)
-    return jsonify(message_list)
+        return jsonify(message_list)
+    else:
+        return jsonify({"status": 0})
 
 
 @app.route('/rm/<messageid>')
@@ -192,8 +202,26 @@ def handle_message(message):
             #if the message is private
             else:
                 print('private message')
-                m = PrivateMessage(content=content, sender=current_user.username, reciever=message['reciever'])
-                db.session.add(m)
+                user1 = User.query.filter_by(username=message["reciever"]).first()
+                channel_name = ""
+                if user1.id > current_user.id:
+                    channel_name = f"{current_user.username}{current_user.id}{user1.username}{user1.id}"
+                else:
+                    channel_name = f"{user1.username}{user1.id}{current_user.username}{current_user.id}"
+                private_channel = Channel.query.filter(Channel.name==channel_name).first()
+                if not private_channel:
+                    print('private channel created')
+                    private_channel = Channel(name=channel_name)
+                    db.session.add(private_channel)
+                    db.session.commit()
+                    private_channel.users.extend((user1, current_user))
+                    w = Workspace.query.filter_by(name=w_name).first()
+                    w.channels.append(private_channel)
+                    db.session.commit()
+                print(channel_name)
+                private_message = Message(content=content)
+                private_channel.messages.append(private_message)
+                current_user.messages.append(private_message)
                 db.session.commit()
                 send({"status": 2}, broadcast=True)
     except ValueError:
