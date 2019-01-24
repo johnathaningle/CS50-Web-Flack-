@@ -44,8 +44,9 @@ document.addEventListener("DOMContentLoaded", function() {
         }
        
     });
-    //end socket functions
 
+
+    //EVENT LISTENERS
     //adding a new channel
     addChannelButton.addEventListener('click', function(e) {
         let newChannelField = document.querySelector('#new-channel-name')
@@ -54,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function() {
         getChannelUrl(name);
     });
 
-    //Function for changing workspace
+    //changing workspace
     x.forEach(element => {
         element.addEventListener("click", function(e){
             removeActive();
@@ -128,7 +129,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-
+    //API REQUEST FUNCTIONS
     //get the list of channels
     function load_page(text) {
         console.log('searching');
@@ -171,42 +172,6 @@ document.addEventListener("DOMContentLoaded", function() {
         request.send();
         }
     };
-
-    function removeActive() {
-        let icons = document.querySelectorAll('.team');
-        icons.forEach(element => {
-            element.className = 'team';
-        });
-    }
-
-    function clearChannels() {
-        var channel_container = document.querySelector('.channel-container');
-        channel_container.innerHTML='';
-    }
-
-    function clearUsers() {
-        var user_container = document.querySelector('.user-container');
-        user_container.innerHTML = '';
-    }
-
-    function clearMessages() {
-        mainArea.innerHTML = '';
-    }
-
-    function removeChannelActive() {
-        let channel_links = document.querySelectorAll('.channel-list');
-            channel_links.forEach(element => {
-                element.className = "channel-list";
-        });
-    }
-
-    function removeUserActive() {
-        let user_links = document.querySelectorAll('.user-list');
-        user_links.forEach(element => {
-            element.className = 'user-list';
-        });
-    }
-
     // remove a message 
     function removeMessage(id) {
         const request = new XMLHttpRequest();
@@ -259,6 +224,36 @@ document.addEventListener("DOMContentLoaded", function() {
         request.open('GET', url, true);
         request.send();
     }
+    function removeActive() {
+        let icons = document.querySelectorAll('.team');
+        icons.forEach(element => {
+            element.className = 'team';
+        });
+    }
+    function clearChannels() {
+        var channel_container = document.querySelector('.channel-container');
+        channel_container.innerHTML='';
+    }
+    function clearUsers() {
+        var user_container = document.querySelector('.user-container');
+        user_container.innerHTML = '';
+    }
+    function clearMessages() {
+        mainArea.innerHTML = '';
+    }
+
+    function removeChannelActive() {
+        let channel_links = document.querySelectorAll('.channel-list');
+            channel_links.forEach(element => {
+                element.className = "channel-list";
+        });
+    }
+    function removeUserActive() {
+        let user_links = document.querySelectorAll('.user-list');
+        user_links.forEach(element => {
+            element.className = 'user-list';
+        });
+    }
 
     function createMessage(content, username, id) {
         let messageDiv = document.createElement('div');
@@ -280,7 +275,5 @@ document.addEventListener("DOMContentLoaded", function() {
         messageDiv.appendChild(rowDiv);
         mainArea.appendChild(messageDiv);
     }
-
-
 });
     
