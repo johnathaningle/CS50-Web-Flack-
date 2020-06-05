@@ -4,7 +4,7 @@ from flask_login import UserMixin
 from flack import db, loginmanager, app #remove app for production
 
 @loginmanager.user_loader
-def load_user(user_id):
+def load_user(user_id: int):
     return User.query.get(int(user_id))
 
 
