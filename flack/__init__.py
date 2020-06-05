@@ -7,7 +7,7 @@ from flask_socketio import SocketIO
 
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config["SECRET_KEY"] = "efeo3030dd03JOOO"
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///flack.db'
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 socketio = SocketIO(app)
