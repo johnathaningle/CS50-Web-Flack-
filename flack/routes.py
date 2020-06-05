@@ -5,7 +5,7 @@ from flask import render_template, redirect, flash, url_for, request, jsonify, s
 from flask_login import login_user, current_user, logout_user
 from flask_socketio import emit, join_room, send
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy import and_
+
 
 
 @app.route('/')
@@ -24,7 +24,7 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        check_user = User.query.filter_by(email=form.email.data).first()
+        check_user = db.session.query(User).filter_by(email=form.email.data).first()
         if check_user and check_password_hash(check_user.password, form.password.data):
             login_user(check_user, remember=form.remember.data)
             flash('You have been logged in!', 'success')
@@ -44,14 +44,12 @@ def register():
         form_email = form.email.data
         form_workspace = form.workspace_name.data
         print(f"{form_username} {form_password} {form_email} {form_workspace}")
-        user = User.query.filter_by(username=form_username).first()
-        email = User.query.filter_by(email=form_email).first()
+        user = db.session.query(User).filter_by(username=form_username).first()
+        email = db.session.query(User).filter_by(email=form_email).first()
         workspace = Workspace.query.filter(Workspace.name==form_workspace).first()
-        if user:
+        if user or email:
             flash(f"Username {form.username.data} already exists", category='danger')
             return redirect(url_for('register'))
-        if email:
-            print('email already exists')
         u1 = User(username=form_username, email=form_email, password=form_password)
         if workspace:
             db.session.add(u1)
