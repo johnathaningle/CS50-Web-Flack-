@@ -47,10 +47,8 @@ img {
 .login-form {
     background: white;
     border-radius: 8px;
-    margin-top: -8%;
     padding: 20px;
     width: 400px;
-    margin-top: -200px !important;
     -webkit-box-shadow:0px 1px 5px #b9b9b9;
     -moz-box-shadow:0px 1px 5px #b9b9b9;
     box-shadow:0px 1px 5px #b9b9b9;
