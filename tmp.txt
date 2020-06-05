@@ -1,3 +1,2 @@
 set FLASK_DEBUG=1
 set SECRET_KEY=efeo3030dd03JOOO
-set FLASK_APP=application.py

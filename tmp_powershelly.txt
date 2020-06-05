@@ -1,3 +1,2 @@
 $env:FLASK_DEBUG="1"
 $env:SECRET_KEY="efeo3030dd03JOOO"
-$env:FLASK_APP="application.py"
