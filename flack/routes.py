@@ -1,3 +1,4 @@
+from flack.common.user_service import update_password, validate_password
 from flack import app, db, socketio
 from flack.models import User, Workspace, Channel, Message
 from flack.forms import PasswordResetForm, RegistrationForm, LoginForm
@@ -26,6 +27,8 @@ def reset():
         return redirect(url_for("login"))
     form = PasswordResetForm()
     if form.validate_on_submit():
+        if validate_password(current_user, form.current_password.data, form.new_password.data):
+            update_password(current_user, form.new_password.data)
         return redirect(url_for('index'))
     else:
         return render_template("reset.html", form=form)
