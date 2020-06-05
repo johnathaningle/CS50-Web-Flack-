@@ -1,4 +1,5 @@
-from sqlalchemy import Column, ForeignKey, String, Integer
+from datetime import datetime
+
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
 from flack import db, loginmanager, app #remove app for production
@@ -54,6 +55,13 @@ class Message(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     channel_id = db.Column(db.Integer, db.ForeignKey("channel.id"))
 
+class Log(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String, nullable=False)
+    time = db.Column(db.DateTime, nullable=False)
+    success = db.Column(db.Boolean, nullable=False)
+
+
 @app.cli.command('bootstrap')
 def bootstrap_data():
     db.drop_all()
@@ -96,6 +104,10 @@ def bootstrap_data():
     c1.messages.append(m3)
     c1.messages.append(m2)
     c1.messages.append(m1)
+
+    log1 = Log(ip_address="0.0.0.0", time=datetime.now(), success=True)
+    db.session.add(log1)
+
     db.session.commit()
 
     #test database queries

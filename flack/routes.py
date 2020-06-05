@@ -1,6 +1,8 @@
 from flack import app, db, socketio
 from flack.models import User, Workspace, Channel, Message
-from flack.forms import RegistrationForm, LoginForm
+from flack.forms import PasswordResetForm, RegistrationForm, LoginForm
+from flack.common.log_service import add_log
+
 from flask import render_template, redirect, flash, url_for, request, jsonify, session
 from flask_login import login_user, current_user, logout_user
 from flask_socketio import emit, join_room, send
@@ -18,6 +20,17 @@ def index():
     else:
         return redirect(url_for('login'))
 
+@app.route("/reset", methods=["GET", "POST"])
+def reset():
+    if not current_user.is_authenticated:
+        return redirect(url_for("login"))
+    form = PasswordResetForm()
+    if form.validate_on_submit():
+        return redirect(url_for('index'))
+    else:
+        return render_template("reset.html", form=form)
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -27,12 +40,13 @@ def login():
         check_user = db.session.query(User).filter_by(email=form.email.data).first()
         if check_user and check_password_hash(check_user.password, form.password.data):
             login_user(check_user, remember=form.remember.data)
+            add_log(request, True)
             flash('You have been logged in!', 'success')
             return redirect(url_for('index'))
         else:
+            add_log(request, False)
             flash('Invalid username or password', 'danger')
             return redirect(url_for('index'))
-        return redirect(url_for('index'))
     return render_template("login.html", form=form)
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -43,7 +57,6 @@ def register():
         form_password = generate_password_hash(form.password.data)
         form_email = form.email.data
         form_workspace = form.workspace_name.data
-        print(f"{form_username} {form_password} {form_email} {form_workspace}")
         user = db.session.query(User).filter_by(username=form_username).first()
         email = db.session.query(User).filter_by(email=form_email).first()
         workspace = Workspace.query.filter(Workspace.name==form_workspace).first()
