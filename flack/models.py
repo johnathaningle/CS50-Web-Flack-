@@ -2,6 +2,7 @@ from datetime import datetime
 
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash
 from flack import db, loginmanager, app #remove app for production
 
 @loginmanager.user_loader
@@ -60,6 +61,7 @@ class Log(db.Model):
     ip_address = db.Column(db.String, nullable=False)
     time = db.Column(db.DateTime, nullable=False)
     success = db.Column(db.Boolean, nullable=False)
+    email = db.Column(db.String, nullable=True)
 
 
 @app.cli.command('bootstrap')
@@ -68,9 +70,12 @@ def bootstrap_data():
     print("database dropped")
     db.create_all()
     print("database created")
-    u1 = User(username='greg', password="password", email="j@email.co")
-    u2 = User(username='bob', password="supersecret", email="bob@email.co")
-    u3 = User(username='bsname', password="pawoaman", email="bse@email.co")
+    u1 = User(username='greg', email="j@email.co")
+    u1.password = generate_password_hash(password="password")
+    u2 = User(username='bob', email="bob@email.co")
+    u2.password = generate_password_hash(password="supersecret")
+    u3 = User(username='bsname', email="bse@email.co")
+    u3.password = generate_password_hash(password="pawoaman")
     c1 = Channel(name="General", private="false")
     c2 = Channel(name="Random", private="false")
     c3 = Channel(name="Labs", private="true")
