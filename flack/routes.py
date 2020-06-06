@@ -57,6 +57,10 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         form_username = form.username.data
+        valid_pw, valid_msg = validate_password(None, "", form.password.data)
+        if not valid_pw:
+            flash(valid_msg, category='danger')
+            return redirect(url_for('register'))
         form_password = generate_password_hash(form.password.data)
         form_email = form.email.data
         form_workspace = form.workspace_name.data

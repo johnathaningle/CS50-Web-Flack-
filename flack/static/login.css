@@ -45,6 +45,7 @@ img {
 }
 
 .login-form {
+    margin-top: -5%;
     background: white;
     border-radius: 8px;
     padding: 20px;

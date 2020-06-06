@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from flack import db
 from flack.models import User
@@ -6,12 +6,18 @@ from flack.models import User
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import login_user, logout_user
 
-def validate_password(user: User, old_pw: str, new_pw: str) -> bool:
+def validate_password(user: Optional[User], old_pw: str, new_pw: str) -> Tuple[bool, str]:
     if new_pw in get_insecure_passwords():
-        return False
-    if not check_password_hash(user.password, old_pw):
-        return False
-    return True
+        return False, "The password is too commonly used"
+    if len(new_pw) < 8:
+        return False, "Please enter a password that is at least 8 characters"
+    if len(new_pw) > 64:
+        return False, "Please enter a password less than 64 characters"
+    if user is not None:
+        if not check_password_hash(user.password, old_pw):
+            return False, "The existing pasword is incorrect"
+
+    return True, "Successful password validation"
 
 def get_insecure_passwords() -> List[str]:
     passwords: List[str] = []
