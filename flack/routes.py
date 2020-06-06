@@ -28,8 +28,13 @@ def reset():
         return redirect(url_for("login"))
     form = PasswordResetForm()
     if form.validate_on_submit():
-        if validate_password(current_user, form.current_password.data, form.new_password.data):
+        valid, msg = validate_password(current_user, form.current_password.data, form.new_password.data)
+        if valid == True:
             update_password(current_user, form.new_password.data)
+        else:
+            flash(msg, category="danger")
+            return render_template("reset.html", form=form)
+        flash("Password reset!", category="success")
         return redirect(url_for('index'))
     else:
         return render_template("reset.html", form=form)
