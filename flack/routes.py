@@ -3,7 +3,7 @@ from flack.common.user_service import update_password, validate_password
 from flack import app, db, socketio
 from flack.models import User, Workspace, Channel, Message
 from flack.forms import PasswordResetForm, RegistrationForm, LoginForm
-from flack.common.log_service import add_log, get_logs, group_logs_by_time, validate_past_failed_logins
+from flack.common.log_service import add_log, get_lat_log, get_logs, group_logs_by_time, validate_past_failed_logins
 
 from flask import render_template, redirect, flash, url_for, request, jsonify, session
 from flask_login import login_user, current_user, logout_user
@@ -257,6 +257,14 @@ def admin():
     else:
         logs = get_logs()
         return render_template("admin.html", logs=logs)
+
+@app.route("/admin/getlocation", methods=["POST"])
+def get_location():
+    if not current_user.is_authenticated:
+        return jsonify({"success": False})
+    else:
+        lat, lng = get_lat_log(request.form["ip"])
+        return jsonify({"latitude":lat, "longitude":lng})
 
 @app.route("/admin/flagged")
 def flagged():

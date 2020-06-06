@@ -1,6 +1,33 @@
 {% extends 'admin_layout.html' %}
 
 {% block headsection %}
+<script>
+    $(document).ready(function() {
+        $(".get-location").each(function(idx, el) {
+            $(el).on("click", function(e) {
+                var element = $(e.currentTarget);
+                var ip = element.data("ip");
+                $.ajax({
+                    url: "/admin/getlocation",
+                    method: "POST",
+                    data: {
+                        "ip": ip
+                    },
+                    success: function(e) {
+                        if(e.latitude == "") {
+                            alert("The location for the ip address was not found");
+                        }
+                        else {
+                            var msg = "The latitude is" + e.latitude + " and the longitude is " + e.longitude;
+                            alert(msg);
+                        }
+                    }
+                });
+            });
+
+        });
+    });
+</script>
 {% endblock headsection %}
 
 {% block content %}
@@ -12,6 +39,7 @@
         </h3>
         <p class="mt-2 ml-4 badge badge-primary p-1">{{ group.high_frequency_log_count }} high frequency logs</p>
         <p class="mt-2 ml-4 badge badge-primary p-1"> {{ group.total_failures }} - total failed logins </p>
+        <button class="get-location btn btn-secondary btn-sm ml-auto" data-ip="{{group.ip}}">Get Location</button>
     </div>
     
     <div class="card-body">

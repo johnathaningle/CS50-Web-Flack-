@@ -27,6 +27,15 @@ def get_ip_address(req: request) -> str:
         pass
     return ip_address
 
+def get_lat_log(ip: str) -> Tuple[str, str]:
+    try:
+        res = DbIpCity.get(ip, api_key="free")
+        lat, lng = str(res.latitude), str(res.longitude)
+        return lat, lng
+    except:
+        return "", ""
+
+
 def validate_past_failed_logins(req: request, email: str) -> bool:
     ip_address = get_ip_address(req)
     last_success: Log = db.session.query(Log)\
