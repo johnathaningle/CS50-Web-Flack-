@@ -1,14 +1,15 @@
+from flack.common.view_models.failed_logs import FailedLogsViewModel, LogIpInfo
 from flack.common.user_service import update_password, validate_password
 from flack import app, db, socketio
 from flack.models import User, Workspace, Channel, Message
 from flack.forms import PasswordResetForm, RegistrationForm, LoginForm
-from flack.common.log_service import add_log, validate_past_failed_logins
+from flack.common.log_service import add_log, get_logs, group_logs_by_time, validate_past_failed_logins
 
 from flask import render_template, redirect, flash, url_for, request, jsonify, session
 from flask_login import login_user, current_user, logout_user
 from flask_socketio import emit, join_room, send
 from werkzeug.security import generate_password_hash, check_password_hash
-
+import pandas as pd
 
 
 @app.route('/')
@@ -248,6 +249,32 @@ def handle_message(message):
                 send({"status": 2}, broadcast=True)
     except ValueError:
         pass
+
+@app.route("/admin")
+def admin():
+    if not current_user.is_authenticated:
+        return redirect(url_for("login"))
+    else:
+        logs = get_logs()
+        return render_template("admin.html", logs=logs)
+
+@app.route("/admin/flagged")
+def flagged():
+    if not current_user.is_authenticated:
+        return redirect(url_for("login"))
+    else:
+        vm = FailedLogsViewModel()
+        logs = get_logs()
+        failed_logs = [log for log in logs if log.success == False]
+        failed_log_groups = list(group_logs_by_time(failed_logs))
+        ip_addresses = set([g[0] for g in failed_log_groups])
+        for ip in ip_addresses:
+            log_model = LogIpInfo()
+            log_model.ip = ip
+            log_model.attempted_emails = [x.email for x in failed_logs if x.ip_address == ip]
+            log_model.logs = [x[1] for x in failed_log_groups if x[0] == ip][0]
+            vm.log_ip_groups.append(log_model)
+        return render_template("admin_failed_logs.html", logs=failed_log_groups)
 
 
 

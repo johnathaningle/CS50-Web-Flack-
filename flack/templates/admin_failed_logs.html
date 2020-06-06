@@ -1,0 +1,39 @@
+{% extends 'admin_layout.html' %}
+
+{% block headsection %}
+{% endblock headsection %}
+
+{% block content %}
+{% for group in logs %}
+<div class="card bg-light">
+    <div class="card-header logbtn">
+        <h3>
+            <strong>{{ group[0] }}</strong> - {{ group[1]|length }} logs
+        </h3>
+    </div>
+    
+    <div class="card-body">
+        <table class="table table-striped" id="{{loop.index}}">
+            <thead>
+              <tr>
+                <th scope="col">ip address</th>
+                <th scope="col">time</th>
+                <th scope="col">success</th>
+                <th scope="col">email</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for log in group[1] %}
+              <tr>
+                  <th>{{ log.ip_address }}</th>
+                  <td>{{ log.time }}</td>
+                  <td>{{ log.success }}</td>
+                  <td>{{ log.email }}</td>
+              </tr>
+          {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endfor %}
+{% endblock content %}

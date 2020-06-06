@@ -1,0 +1,24 @@
+{% extends 'admin_layout.html' %}
+{% block content %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">ip address</th>
+      <th scope="col">time</th>
+      <th scope="col">success</th>
+      <th scope="col">email</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs %}
+    <tr>
+        <th>{{ log.ip_address }}</th>
+        <td>{{ log.time }}</td>
+        <td>{{ log.success }}</td>
+        <td>{{ log.email }}</td>
+    </tr>
+{% endfor %}
+  </tbody>
+</table>
+
+{% endblock content %}

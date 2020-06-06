@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 
 from sqlalchemy.orm import relationship
 from flask_login import UserMixin
@@ -62,6 +63,9 @@ class Log(db.Model):
     time = db.Column(db.DateTime, nullable=False)
     success = db.Column(db.Boolean, nullable=False)
     email = db.Column(db.String, nullable=True)
+
+    def to_array(self) -> List[str]:
+        return [str(self.ip_address), str(self.time), str(self.success), str(self.email)]
 
 
 @app.cli.command('bootstrap')
