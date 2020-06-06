@@ -270,11 +270,13 @@ def flagged():
         ip_addresses = set([g[0] for g in failed_log_groups])
         for ip in ip_addresses:
             log_model = LogIpInfo()
+            log_model.high_frequency_log_count = len([x[1] for x in failed_log_groups if x[0] == ip][0])
             log_model.ip = ip
-            log_model.attempted_emails = [x.email for x in failed_logs if x.ip_address == ip]
+            log_model.total_failures = len([x for x in failed_logs if x.ip_address == ip])
+            log_model.attempted_emails = set([x.email for x in failed_logs if x.ip_address == ip])
             log_model.logs = [x[1] for x in failed_log_groups if x[0] == ip][0]
             vm.log_ip_groups.append(log_model)
-        return render_template("admin_failed_logs.html", logs=failed_log_groups)
+        return render_template("admin_failed_logs.html", logs=vm.log_ip_groups)
 
 
 
