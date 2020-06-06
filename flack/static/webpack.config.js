@@ -28,5 +28,8 @@ module.exports = {
                 use: 'imports-loader?THREE=three'
             }
         ]
+    },
+    externals: {
+        "jquery": "jquery"
     }
 }
