@@ -25,16 +25,20 @@ def get_ip_address(req: request) -> str:
         pass
     return ip_address
 
-def validate_past_failed_logins(email: str) -> bool:
+def validate_past_failed_logins(req: request, email: str) -> bool:
+    ip_address = get_ip_address(req)
     last_success: Log = db.session.query(Log)\
         .filter(Log.email == email)\
-        .filter_by(success=True)\
+        .filter(Log.ip_address == ip_address)\
+        .filter(Log.success == True)\
         .order_by(desc(Log.time))\
         .first()
     if last_success:
         failed_log_count: int = db.session.query(Log)\
             .filter_by(email=email)\
+            .filter(Log.ip_address == ip_address)\
             .filter(Log.time > last_success.time)\
+            .filter(Log.success == False)\
             .count()
         if failed_log_count > MAX_LOGIN_ATTEMPTS:
             return False
@@ -42,8 +46,9 @@ def validate_past_failed_logins(email: str) -> bool:
             return True
     else:
         failed_log_count: int = db.session.query(Log)\
+            .filter_by(email=email)\
+            .filter(Log.ip_address == ip_address)\
             .filter(Log.success == False)\
-            .filter(Log.email == email)\
             .count()
         if failed_log_count > MAX_LOGIN_ATTEMPTS:
             return False

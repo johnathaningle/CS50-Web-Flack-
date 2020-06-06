@@ -40,7 +40,7 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        if not validate_past_failed_logins(form.email.data):
+        if not validate_past_failed_logins(request, form.email.data):
             flash("Your account has been locked for too many failed login attempts", category="danger")
             return render_template("login.html", form=form)
         check_user = db.session.query(User).filter_by(email=form.email.data).first()
