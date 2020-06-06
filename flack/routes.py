@@ -2,7 +2,7 @@ from flack.common.user_service import update_password, validate_password
 from flack import app, db, socketio
 from flack.models import User, Workspace, Channel, Message
 from flack.forms import PasswordResetForm, RegistrationForm, LoginForm
-from flack.common.log_service import add_log
+from flack.common.log_service import add_log, validate_past_failed_logins
 
 from flask import render_template, redirect, flash, url_for, request, jsonify, session
 from flask_login import login_user, current_user, logout_user
@@ -40,14 +40,17 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
+        if not validate_past_failed_logins(form.email.data):
+            flash("Your account has been locked for too many failed login attempts", category="danger")
+            return render_template("login.html", form=form)
         check_user = db.session.query(User).filter_by(email=form.email.data).first()
         if check_user and check_password_hash(check_user.password, form.password.data):
             login_user(check_user, remember=form.remember.data)
-            add_log(request, True)
+            add_log(request, form.email.data, True)
             flash('You have been logged in!', 'success')
             return redirect(url_for('index'))
         else:
-            add_log(request, False)
+            add_log(request, form.email.data, False)
             flash('Invalid username or password', 'danger')
             return redirect(url_for('index'))
     return render_template("login.html", form=form)
